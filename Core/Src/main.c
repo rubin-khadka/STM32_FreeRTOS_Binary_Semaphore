@@ -235,6 +235,7 @@ static void MX_USART1_UART_Init(void)
  */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
@@ -242,6 +243,12 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -265,11 +272,21 @@ void StartNormalTask(void const *argument)
   /* Infinite loop */
   for(;;)
   {
-    char *str1 = "Entered MediumTask\n";
+    char *str1 = "Entered MediumTask and waiting for semaphore\n";
     HAL_UART_Transmit(&huart1, (uint8_t*) str1, strlen(str1), 100);
 
-    char *str2 = "Leaving MediumTask\n";
+    osSemaphoreWait(BinarySemaphoreHandle, osWaitForever);
+
+    char *str3 = "Semaphore acquired by Medium Task\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*) str3, strlen(str3), 100);
+
+    while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)); // Wait till button pressed
+
+    char *str2 = "Leaving MediumTask and releasing Semaphore\n";
     HAL_UART_Transmit(&huart1, (uint8_t*) str2, strlen(str2), 100);
+
+    osSemaphoreRelease(BinarySemaphoreHandle);
+
     osDelay(500);
   }
   /* USER CODE END 5 */
@@ -288,10 +305,15 @@ void StartHighTask(void const *argument)
   /* Infinite loop */
   for(;;)
   {
-    char *str1 = "Entered HighTask\n";
+    char *str1 = "Entered HighTask and waiting for Semaphore\n";
     HAL_UART_Transmit(&huart1, (uint8_t*) str1, strlen(str1), 100);
+
+    osSemaphoreWait(BinarySemaphoreHandle, osWaitForever);
+
     char *str2 = "Leaving HighTask\n";
     HAL_UART_Transmit(&huart1, (uint8_t*) str2, strlen(str2), 100);
+
+    osSemaphoreRelease(BinarySemaphoreHandle);
 
     osDelay(500);
   }
