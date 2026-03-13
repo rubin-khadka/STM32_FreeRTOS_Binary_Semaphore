@@ -309,8 +309,10 @@ void StartHighTask(void const *argument)
     HAL_UART_Transmit(&huart1, (uint8_t*) str1, strlen(str1), 100);
 
     osSemaphoreWait(BinarySemaphoreHandle, osWaitForever);
+    char *str3 = "Semaphore acquired by High Task\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*) str3, strlen(str3), 100);
 
-    char *str2 = "Leaving HighTask\n";
+    char *str2 = "Leaving HighTask and releasing Semaphore\n";
     HAL_UART_Transmit(&huart1, (uint8_t*) str2, strlen(str2), 100);
 
     osSemaphoreRelease(BinarySemaphoreHandle);
