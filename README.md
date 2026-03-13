@@ -93,3 +93,8 @@ Semaphore acquired by Normal Task
 ## Pin Configuration
 - PA1: Input pin with button (active low when pressed)
 - USART1: TX/RX for debug messages (PA9/PA10 on STM32F103)
+
+## Contact
+**Rubin Khadka Chhetri**  
+📧 rubin.khadka84@gmail.com <br>
+🐙 GitHub: https://github.com/rubin-khadka
